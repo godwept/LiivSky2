@@ -1,0 +1,162 @@
+/**
+ * Styles for DailyForecast component.
+ */
+
+.daily-section {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.daily-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.daily-subtitle {
+  margin: 0.3rem 0 0.7rem;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.daily-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.daily-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.daily-card--expanded {
+  border-color: rgba(0, 229, 255, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.daily-row {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+}
+
+.daily-day {
+  min-width: 34px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.86);
+  text-transform: uppercase;
+}
+
+.daily-low {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #7bd8ff;
+}
+
+.daily-high {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ff965f;
+}
+
+.daily-bar-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  min-width: 90px;
+}
+
+.daily-bar-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4fc3f7 0%, #42a5f5 35%, #ffb74d 72%, #ff7043 100%);
+  transition: width 0.4s ease, left 0.4s ease;
+}
+
+.daily-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 84px;
+}
+
+.daily-icon {
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.18));
+}
+
+.daily-middle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.daily-temps-inline {
+  display: flex;
+  justify-content: space-between;
+}
+
+.daily-expand-indicator {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.42);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.daily-expand-indicator--open {
+  transform: rotate(180deg);
+  color: rgba(0, 229, 255, 0.9);
+}
+
+.daily-details {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease, opacity 0.22s ease;
+  padding: 0 0.75rem;
+}
+
+.daily-details--open {
+  max-height: 220px;
+  opacity: 1;
+  padding: 0 0.75rem 0.7rem;
+}
+
+.daily-detail-item {
+  margin: 0.35rem 0 0;
+  font-size: 0.73rem;
+  line-height: 1.38;
+  color: rgba(255, 255, 255, 0.73);
+}
+
+.daily-detail-label {
+  display: inline-block;
+  min-width: 36px;
+  margin-right: 0.3rem;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(0, 229, 255, 0.9);
+}

@@ -1,0 +1,108 @@
+/**
+ * Styles for DashboardPage layout.
+ */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 1rem;
+  min-height: 100vh;
+}
+
+.dashboard > section {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ---- Header ---- */
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem 1rem 0;
+}
+
+.location-map-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.location-map-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.header-content {
+  flex: 1;
+}
+
+.dashboard-location {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Gauge section ---- */
+
+.gauge-section {
+  width: 100%;
+  padding: 0 0.5rem;
+  margin-bottom: -0.75rem;
+}
+
+/* ---- Metrics row: stacked badges flanking conditions card ---- */
+
+.metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  padding: 0 0.5rem;
+}
+
+.badge-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 68px;
+}
+
+.metrics-row > .conditions-card {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- Bottom spacer for fixed nav ---- */
+
+.nav-spacer {
+  height: 72px;
+  flex-shrink: 0;
+}
+
+/* ---- Desktop ---- */
+
+@media (min-width: 768px) {
+  .dashboard {
+    max-width: 600px;
+    padding-top: 1rem;
+  }
+}

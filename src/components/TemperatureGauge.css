@@ -1,0 +1,54 @@
+/**
+ * Styles for TemperatureGauge component.
+ * Deep dark-theme with multi-layer glow.
+ */
+
+.gauge-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+  margin: -0.5rem auto 0;
+  padding: 0;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0 30px rgba(120, 40, 200, 0.12));
+}
+
+/* ---- Center text ---- */
+
+.gauge-temp-text {
+  font-size: 3rem;
+  font-weight: 700;
+  fill: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.gauge-feelslike-text {
+  font-size: 0.9rem;
+  font-weight: 400;
+  fill: rgba(255, 255, 255, 0.5);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.gauge-marker-label {
+  font-size: 1.0rem;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ---- Current temp pulse ---- */
+
+.gauge-current-indicator {
+  animation: indicator-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes indicator-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}

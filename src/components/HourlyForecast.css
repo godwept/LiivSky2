@@ -1,0 +1,100 @@
+/**
+ * Styles for HourlyForecast component.
+ */
+
+.hourly-section {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+  overflow-x: hidden;
+}
+
+.hourly-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 0.6rem 0;
+  letter-spacing: 0.02em;
+}
+
+.hourly-carousel-viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 0.1rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  overscroll-behavior: contain;
+  overscroll-behavior-x: contain;
+  cursor: grab;
+  padding: 0 0 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.hourly-carousel-viewport:active {
+  cursor: grabbing;
+}
+
+.hourly-carousel-viewport::-webkit-scrollbar {
+  height: 4px;
+}
+
+.hourly-carousel-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hourly-carousel-viewport::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+.hourly-track {
+  display: flex;
+  gap: 0.55rem;
+  width: max-content;
+}
+
+.hourly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 78px;
+  min-width: 78px;
+  padding: 0.6rem 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  transition: background 0.2s;
+}
+
+.hourly-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hourly-time {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hourly-temp {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.hourly-precip {
+  font-size: 0.65rem;
+  color: #42a5f5;
+  font-weight: 500;
+}
+
+.condition-dot {
+  flex-shrink: 0;
+}

@@ -1,0 +1,84 @@
+# Quick Start Vite + React in the Command Prompt
+
+## 1. Open Command Prompt
+- Press `Win + R`, type `cmd`, hit Enter.
+- Or search Command Prompt in Windows.
+
+## 2. Navigate to Your Projects Directory
+```bash
+cd pathtoyourprojects
+```
+_E.g._
+```bash
+cd CUsersyournameDocuments
+```
+
+## 3. Create a New Vite React App
+```bash
+npm create vite@latest my-pwa -- --template react
+```
+- Replace `my-pwa` with your preferred folder name.
+- Follow prompts Choose React, then JavaScript (or TypeScript if you want).
+
+---
+
+## 4. Enter Your Project Folder
+```bash
+cd my-pwa
+```
+
+---
+
+## 5. Install Dependencies
+```bash
+npm install
+```
+
+---
+
+## 6. Start the Development Server
+```bash
+npm run dev
+```
+- Go to `httplocalhost5173` in your browser to see the app!
+
+---
+
+## 7. Common Command Line Tasks
+
+- Open VS Code from project folder
+  ```bash
+  code .
+  ```
+- Stop the server  
+  Press `Ctrl+C` in the command window.
+- Restart server  
+  Run `npm run dev` again.
+- Install a package  
+  ```bash
+  npm install packagename
+  ```
+- Build for production  
+  ```bash
+  npm run build
+  ```
+- Preview the build locally  
+  ```bash
+  npm run preview
+  ```
+
+---
+
+## 8. Troubleshooting Tips
+
+- If `npm` doesn’t run in PowerShell, use `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` once.
+- Always run commands from your project folder (where `package.json` lives).
+- You can use Command Prompt (`cmd`), PowerShell, or VS Code’s integrated terminal.
+
+---
+
+## 9. Useful References
+
+- [Vite Docs](httpsvitejs.dev)
+- [React Docs](httpsreact.dev)
+- [VS Code Docs](httpscode.visualstudio.comdocs)
