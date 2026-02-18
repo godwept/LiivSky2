@@ -1,0 +1,6 @@
+name = "liivsky2-api"
+main = "src/index.ts"
+compatibility_date = "2026-02-17"
+
+[vars]
+CORS_ORIGIN = "*"

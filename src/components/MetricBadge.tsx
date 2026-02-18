@@ -5,6 +5,7 @@
  * Shows icon + value + label in a small glassmorphic circle.
  */
 import type { WeatherMetric } from '../types';
+import type { ReactNode } from 'react';
 import './MetricBadge.css';
 
 interface MetricBadgeProps {
@@ -14,7 +15,7 @@ interface MetricBadgeProps {
 /** Compact inline SVG icons */
 function BadgeIcon({ icon, color }: { icon: string; color: string }) {
   const size = 22;
-  const icons: Record<string, JSX.Element> = {
+  const icons: Record<string, ReactNode> = {
     humidity: (
       <svg viewBox="0 0 24 24" fill={color} width={size} height={size}>
         <path d="M12 2c-5.33 8-8 12.67-8 16a8 8 0 0 0 16 0c0-3.33-2.67-8-8-16z" opacity="0.85" />
@@ -33,6 +34,27 @@ function BadgeIcon({ icon, color }: { icon: string; color: string }) {
           <line x1="4.93" y1="19.07" x2="6.76" y2="17.24" />
           <line x1="17.24" y1="6.76" x2="19.07" y2="4.93" />
         </g>
+      </svg>
+    ),
+    'pressure-rising': (
+      <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size}>
+        <path d="M4 16h16" />
+        <path d="M12 17V7" />
+        <path d="M8 11l4-4 4 4" />
+      </svg>
+    ),
+    'pressure-falling': (
+      <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size}>
+        <path d="M4 8h16" />
+        <path d="M12 7v10" />
+        <path d="M8 13l4 4 4-4" />
+      </svg>
+    ),
+    'pressure-steady': (
+      <svg viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={size} height={size}>
+        <path d="M4 12h16" />
+        <path d="M8 9l-3 3 3 3" />
+        <path d="M16 9l3 3-3 3" />
       </svg>
     ),
     precip: (

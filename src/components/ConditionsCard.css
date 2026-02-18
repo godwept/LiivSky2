@@ -19,8 +19,16 @@
 .cc-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 0.35rem;
   padding: 0 0.15rem;
+}
+
+.cc-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .cc-condition-icon {
@@ -128,4 +136,13 @@
   font-size: 9px;
   fill: rgba(255, 255, 255, 0.35);
   font-weight: 500;
+}
+
+.cc-updated-at {
+  margin: 0;
+  font-size: 0.56rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
+  text-align: right;
+  white-space: nowrap;
 }

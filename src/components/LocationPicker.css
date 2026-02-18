@@ -1,0 +1,199 @@
+.location-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 20, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 120;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.location-picker-panel {
+  width: min(560px, 100%);
+  max-height: min(88vh, 760px);
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(17, 20, 32, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.location-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem 0.6rem;
+}
+
+.location-picker-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.location-picker-close {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+}
+
+.location-picker-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  padding: 0 1rem 0.8rem;
+}
+
+.location-picker-tab {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.87rem;
+  cursor: pointer;
+}
+
+.location-picker-tab--active {
+  border-color: rgba(0, 229, 255, 0.55);
+  color: #ffffff;
+  background: rgba(0, 229, 255, 0.18);
+}
+
+.location-picker-body {
+  padding: 0 1rem 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.location-picker-input {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  padding: 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.location-picker-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.location-picker-note {
+  margin: 0.1rem 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.location-picker-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.location-picker-result {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.location-picker-result--active {
+  border-color: rgba(0, 229, 255, 0.55);
+  background: rgba(0, 229, 255, 0.16);
+}
+
+.location-picker-result-name {
+  font-size: 0.86rem;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-picker-result-sub {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-picker-map-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.location-picker-leaflet-map {
+  width: 100%;
+  height: 270px;
+}
+
+.location-picker-map-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.location-picker-secondary,
+.location-picker-confirm {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  height: 38px;
+  padding: 0 0.8rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.location-picker-confirm {
+  width: 100%;
+  background: rgba(0, 229, 255, 0.18);
+  border-color: rgba(0, 229, 255, 0.45);
+}
+
+.location-picker-confirm:disabled,
+.location-picker-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.location-picker-error {
+  margin: 0;
+  color: rgba(255, 168, 168, 0.95);
+  font-size: 0.78rem;
+}
+
+@media (min-width: 768px) {
+  .location-picker-overlay {
+    align-items: center;
+  }
+}

@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import DashboardPage from './pages/DashboardPage';
 import BottomNav from './components/BottomNav';
+import AppErrorBoundary from './components/AppErrorBoundary';
 import type { NavTab } from './types';
 import './styles/global.css';
 
@@ -21,7 +22,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('today');
 
   return (
-    <>
+    <AppErrorBoundary>
       {/* For now, only the dashboard page is implemented */}
       {activeTab === 'today' && <DashboardPage />}
       {activeTab !== 'today' && (
@@ -37,6 +38,6 @@ export default function App() {
         </div>
       )}
       <BottomNav tabs={NAV_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-    </>
+    </AppErrorBoundary>
   );
 }

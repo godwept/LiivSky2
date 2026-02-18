@@ -55,7 +55,7 @@ function DailyIcon({ icon }: { icon: string }) {
 }
 
 export default function DailyForecast({ items, unit, overallMin, overallMax }: DailyForecastProps) {
-  const [expandedDay, setExpandedDay] = useState<string>(items[0]?.day ?? '');
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(items.length > 0 ? 0 : null);
   const range = overallMax - overallMin;
 
   return (
@@ -63,18 +63,27 @@ export default function DailyForecast({ items, unit, overallMin, overallMax }: D
       <h3 className="daily-title">Daily Forecast</h3>
       <p className="daily-subtitle">Tap a day to view full forecast details</p>
       <div className="daily-list">
-        {items.map((item) => {
+        {items.map((item, index) => {
           const leftPct = range > 0 ? ((item.low - overallMin) / range) * 100 : 0;
           const widthPct = range > 0 ? ((item.high - item.low) / range) * 100 : 50;
-          const isExpanded = expandedDay === item.day;
+          const daySummary = item.daySummary?.trim();
+          const nightSummary = item.nightSummary?.trim();
+          const hasDetails = Boolean(daySummary || nightSummary);
+          const isExpanded = expandedIndex === index;
 
           return (
-            <article className={`daily-card ${isExpanded ? 'daily-card--expanded' : ''}`} key={item.day}>
+            <article className={`daily-card ${isExpanded ? 'daily-card--expanded' : ''}`} key={`${item.day}-${index}`}>
               <button
                 className="daily-row"
                 type="button"
-                onClick={() => setExpandedDay(isExpanded ? '' : item.day)}
-                aria-expanded={isExpanded}
+                onClick={() => {
+                  if (!hasDetails) {
+                    return;
+                  }
+
+                  setExpandedIndex(isExpanded ? null : index);
+                }}
+                aria-expanded={hasDetails ? isExpanded : false}
               >
                 <div className="daily-left">
                   <DailyIcon icon={item.icon} />
@@ -97,21 +106,29 @@ export default function DailyForecast({ items, unit, overallMin, overallMax }: D
                   </div>
                 </div>
 
-                <span className={`daily-expand-indicator ${isExpanded ? 'daily-expand-indicator--open' : ''}`} aria-hidden>
-                  ▾
-                </span>
+                {hasDetails && (
+                  <span className={`daily-expand-indicator ${isExpanded ? 'daily-expand-indicator--open' : ''}`} aria-hidden>
+                    ▾
+                  </span>
+                )}
               </button>
 
-              <div className={`daily-details ${isExpanded ? 'daily-details--open' : ''}`}>
-                <p className="daily-detail-item">
-                  <span className="daily-detail-label">Day</span>
-                  {item.daySummary ?? 'Forecast details coming soon.'}
-                </p>
-                <p className="daily-detail-item">
-                  <span className="daily-detail-label">Night</span>
-                  {item.nightSummary ?? 'Night forecast details coming soon.'}
-                </p>
-              </div>
+              {hasDetails && (
+                <div className={`daily-details ${isExpanded ? 'daily-details--open' : ''}`}>
+                  {daySummary && (
+                    <p className="daily-detail-item">
+                      <span className="daily-detail-label">Day</span>
+                      {daySummary}
+                    </p>
+                  )}
+                  {nightSummary && (
+                    <p className="daily-detail-item">
+                      <span className="daily-detail-label">Night</span>
+                      {nightSummary}
+                    </p>
+                  )}
+                </div>
+              )}
             </article>
           );
         })}

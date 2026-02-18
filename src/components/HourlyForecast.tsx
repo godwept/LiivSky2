@@ -73,8 +73,8 @@ export default function HourlyForecast({ items, unit }: HourlyForecastProps) {
       <h3 className="hourly-title">Hourly Forecast</h3>
       <div className="hourly-carousel-viewport" ref={scrollRef}>
         <div className="hourly-track">
-          {items.map((item) => (
-            <div className="hourly-item" key={item.time}>
+          {items.map((item, index) => (
+            <div className="hourly-item" key={`${item.time}-${index}`}>
               <span className="hourly-time">{item.time}</span>
               <ConditionDot icon={item.icon} />
               <span className="hourly-temp">{item.temp}°{unit}</span>

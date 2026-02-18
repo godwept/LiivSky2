@@ -3,6 +3,7 @@
  * Currently uses mock data for prototyping.
  */
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type {
   TemperatureGaugeData,
   WeatherMetric,
@@ -11,7 +12,28 @@ import type {
   ConditionsCardData,
 } from '../types';
 
+export type WeatherProvider = 'ec' | 'twn';
+
+export interface WeatherSnapshot {
+  location: string;
+  temperature: TemperatureGaugeData;
+  metrics: WeatherMetric[];
+  conditions: ConditionsCardData;
+  hourlyForecast: HourlyForecastItem[];
+  dailyForecast: DailyForecastItem[];
+}
+
 interface WeatherState {
+  /** Active provider */
+  provider: WeatherProvider;
+  /** Selected latitude */
+  lat: number;
+  /** Selected longitude */
+  lon: number;
+  /** Network loading state */
+  isLoading: boolean;
+  /** Last fetch error */
+  error: string | null;
   /** Location name */
   location: string;
   /** Main temperature gauge data */
@@ -24,10 +46,29 @@ interface WeatherState {
   hourlyForecast: HourlyForecastItem[];
   /** Daily forecast items */
   dailyForecast: DailyForecastItem[];
+  /** Set provider */
+  setProvider: (provider: WeatherProvider) => void;
+  /** Set location label */
+  setLocation: (location: string) => void;
+  /** Set selected coordinates */
+  setCoords: (lat: number, lon: number) => void;
+  /** Replace weather snapshot */
+  setWeatherSnapshot: (snapshot: WeatherSnapshot) => void;
+  /** Set loading state */
+  setLoading: (isLoading: boolean) => void;
+  /** Set error state */
+  setError: (error: string | null) => void;
 }
 
 /** Mock data for prototyping the dashboard UI */
-export const useWeatherStore = create<WeatherState>()(() => ({
+export const useWeatherStore = create<WeatherState>()(
+  persist(
+    (set) => ({
+  provider: 'ec',
+  lat: 43.6532,
+  lon: -79.3832,
+  isLoading: false,
+  error: null,
   location: 'Toronto, ON',
 
   temperature: {
@@ -35,9 +76,9 @@ export const useWeatherStore = create<WeatherState>()(() => ({
     feelsLike: 70,
     low: 65,
     high: 88,
-    min: 20,
-    max: 110,
-    unit: 'F',
+    min: 53,
+    max: 100,
+    unit: 'C',
   },
 
   metrics: [
@@ -62,6 +103,7 @@ export const useWeatherStore = create<WeatherState>()(() => ({
     sunset: '8:15 PM',
     moonPhase: 'Waxing Crescent',
     moonIllumination: 34,
+    sourceUpdatedAt: 'Aug 27, 3:12 PM',
   },
 
   hourlyForecast: [
@@ -149,4 +191,34 @@ export const useWeatherStore = create<WeatherState>()(() => ({
       nightSummary: 'Partly cloudy with a gentle cooldown through the night.',
     },
   ],
-}));
+
+  setProvider: (provider) => set({ provider }),
+
+  setLocation: (location) => set({ location }),
+
+  setCoords: (lat, lon) => set({ lat, lon }),
+
+  setWeatherSnapshot: (snapshot) =>
+    set({
+      temperature: snapshot.temperature,
+      metrics: snapshot.metrics,
+      conditions: snapshot.conditions,
+      hourlyForecast: snapshot.hourlyForecast,
+      dailyForecast: snapshot.dailyForecast,
+    }),
+
+  setLoading: (isLoading) => set({ isLoading }),
+
+  setError: (error) => set({ error }),
+    }),
+    {
+      name: 'liivsky-weather-location',
+      partialize: (state) => ({
+        provider: state.provider,
+        lat: state.lat,
+        lon: state.lon,
+        location: state.location,
+      }),
+    },
+  ),
+);

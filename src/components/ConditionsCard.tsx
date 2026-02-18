@@ -262,8 +262,13 @@ export default function ConditionsCard({ data, tempCurve, precipCurve }: Conditi
     <div className="conditions-card">
       {/* Top: large condition icon + label */}
       <div className="cc-header">
-        <ConditionIcon icon={data.conditionIcon} />
-        <span className="cc-condition-label">{data.condition}</span>
+        <div className="cc-header-left">
+          <ConditionIcon icon={data.conditionIcon} />
+          <span className="cc-condition-label">{data.condition}</span>
+        </div>
+        {data.sourceUpdatedAt && (
+          <span className="cc-updated-at">Last updated {data.sourceUpdatedAt}</span>
+        )}
       </div>
 
       {/* 4-across metric row: wind, sunrise, sunset, moon */}
@@ -307,6 +312,7 @@ export default function ConditionsCard({ data, tempCurve, precipCurve }: Conditi
           unitSuffix="%"
         />
       </div>
+
     </div>
   );
 }

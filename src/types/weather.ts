@@ -108,4 +108,6 @@ export interface ConditionsCardData {
   moonPhase: string;
   /** Moon illumination percentage (0–100) */
   moonIllumination: number;
+  /** Source update timestamp display text */
+  sourceUpdatedAt?: string;
 }
