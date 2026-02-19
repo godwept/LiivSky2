@@ -1,0 +1,187 @@
+/**
+ * Styles for the AnimationBar (play/pause + scrubber).
+ * Glassmorphic bar anchored to the bottom of the map.
+ */
+
+.animation-bar {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 14px;
+  background: rgba(10, 12, 20, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  max-width: calc(100% - 2rem);
+  min-width: 280px;
+}
+
+/* ---- Transport buttons ---- */
+.anim-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.anim-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.anim-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.anim-btn--play {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.15);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: var(--accent-cyan);
+}
+
+.anim-btn--play:hover:not(:disabled) {
+  background: rgba(0, 229, 255, 0.25);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+}
+
+/* ---- Loading spinner ---- */
+.anim-spinner {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(0, 229, 255, 0.25);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: anim-spin 0.8s linear infinite;
+}
+
+@keyframes anim-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Scrubber / Range ---- */
+.anim-scrubber {
+  position: relative;
+  flex: 1;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  min-width: 60px;
+}
+
+.anim-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+/* Progress fill beneath the range input */
+.anim-range-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent-cyan);
+  pointer-events: none;
+  z-index: 1;
+  transition: width 0.1s linear;
+}
+
+/* Thumb styles */
+.anim-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  border: 2px solid rgba(10, 12, 20, 0.8);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+  cursor: pointer;
+  position: relative;
+  z-index: 3;
+}
+
+.anim-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  border: 2px solid rgba(10, 12, 20, 0.8);
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+  cursor: pointer;
+}
+
+/* Track fill for Firefox */
+.anim-range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.anim-range::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent-cyan);
+}
+
+/* ---- Time label ---- */
+.anim-time {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  min-width: 3.5em;
+  text-align: center;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Cache progress bar (shown while pre-loading frames) ---- */
+.anim-cache-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.anim-cache-fill {
+  height: 100%;
+  background: var(--accent-cyan);
+  border-radius: 14px 14px 0 0;
+  transition: width 0.3s ease-out;
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}

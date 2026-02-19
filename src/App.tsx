@@ -4,6 +4,9 @@
  */
 import { useState } from 'react';
 import DashboardPage from './pages/DashboardPage';
+import MapPage from './pages/MapPage';
+import ModelsPage from './pages/ModelsPage';
+import DarkSkyPage from './pages/DarkSkyPage';
 import BottomNav from './components/BottomNav';
 import AppErrorBoundary from './components/AppErrorBoundary';
 import type { NavTab } from './types';
@@ -13,8 +16,7 @@ import './styles/global.css';
 const NAV_TABS: NavTab[] = [
   { id: 'today', label: 'Today', icon: 'today' },
   { id: 'map', label: 'Map', icon: 'map' },
-  { id: 'settings', label: 'Settings', icon: 'settings' },
-  { id: 'favorites', label: 'Favorites', icon: 'favorites' },
+  { id: 'models', label: 'Models', icon: 'models' },
   { id: 'darksky', label: 'Dark Sky', icon: 'darksky' },
 ];
 
@@ -25,7 +27,10 @@ export default function App() {
     <AppErrorBoundary>
       {/* For now, only the dashboard page is implemented */}
       {activeTab === 'today' && <DashboardPage />}
-      {activeTab !== 'today' && (
+      {activeTab === 'map' && <MapPage />}
+      {activeTab === 'models' && <ModelsPage />}
+      {activeTab === 'darksky' && <DarkSkyPage />}
+      {activeTab !== 'today' && activeTab !== 'map' && activeTab !== 'models' && activeTab !== 'darksky' && (
         <div style={{
           display: 'flex',
           alignItems: 'center',

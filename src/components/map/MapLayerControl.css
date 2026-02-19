@@ -1,0 +1,121 @@
+/**
+ * Styles for the MapLayerControl floating panel.
+ * Glassmorphic pills anchored to the top-right of the map.
+ */
+
+.map-layer-control {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border-radius: 14px;
+  background: rgba(10, 12, 20, 0.65);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* Row containing the primary layer toggles */
+.layer-row {
+  display: flex;
+  gap: 0.45rem;
+}
+
+/* ---- Individual layer button ---- */
+.layer-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.layer-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Active state — uses --layer-accent custom property */
+.layer-btn--active {
+  background: color-mix(in srgb, var(--layer-accent, var(--accent-cyan)) 18%, transparent);
+  border-color: color-mix(in srgb, var(--layer-accent, var(--accent-cyan)) 35%, transparent);
+  color: var(--layer-accent, var(--accent-cyan));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--layer-accent, var(--accent-cyan)) 20%, transparent);
+}
+
+/* Disabled / coming-soon state */
+.layer-btn--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* "soon" badge on disabled layers */
+.layer-btn__badge {
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-orange);
+  background: rgba(255, 109, 0, 0.15);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+/* Label text inside button */
+.layer-btn__label {
+  pointer-events: none;
+}
+
+/* ---- Radar product sub-selector row ---- */
+.radar-product-row {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0.15rem 0.1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.radar-product-btn {
+  flex: 1;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+}
+
+.radar-product-btn:hover {
+  background: rgba(0, 229, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.radar-product-btn--active {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.3);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.12);
+}

@@ -96,5 +96,13 @@
 }
 
 .condition-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+.condition-dot .wi {
+  font-size: 1.15rem;
+  line-height: 1;
 }

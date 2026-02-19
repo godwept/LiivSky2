@@ -1,1 +1,2 @@
-Please read AI_AGENT_REFERENCE.md, API_ENDPOINTS_REFERENCE.md, and UI_LAYOUT.txt.
+Please read AI_AGENT_REFERENCE.md and API_ENDPOINTS_REFERENCE.md.
+We are focusing on _.  Please familiarize yourself with the code related to it.

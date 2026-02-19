@@ -1,0 +1,315 @@
+/**
+ * Styles for the ModelsPage — forecast model comparison view.
+ * Dark glass aesthetic consistent with the rest of the app.
+ */
+
+.models-page {
+  padding: 1rem 1rem calc(var(--nav-height) + 1.5rem);
+  min-height: 100vh;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---- Page header ---- */
+.models-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.models-header h1 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.models-header p {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ---- Charts / Maps toggle ---- */
+.models-view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.view-toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-toggle-btn:hover {
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.view-toggle-btn--active {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.08);
+}
+
+/* ---- Parameter selector ---- */
+.models-param-bar {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.models-param-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.param-chip {
+  flex-shrink: 0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.param-chip:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.param-chip--active {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: rgba(0, 229, 255, 0.35);
+  color: var(--accent-cyan);
+}
+
+/* ---- Model toggle pills ---- */
+.models-toggle-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.model-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.model-pill:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.model-pill--active {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.model-pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.model-pill__name {
+  font-weight: 600;
+}
+
+.model-pill__res {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+}
+
+/* ---- Chart container ---- */
+.models-chart-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.models-chart-card__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+/* ---- SVG chart ---- */
+.models-chart {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.models-chart::-webkit-scrollbar {
+  display: none;
+}
+
+.models-chart svg {
+  display: block;
+}
+
+/* ---- Legend ---- */
+.models-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.models-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+}
+
+.models-legend__swatch {
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* ---- Loading state ---- */
+.models-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.models-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Error state ---- */
+.models-error {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #ef9a9a;
+  font-size: 0.78rem;
+}
+
+/* ---- Time axis labels ---- */
+.chart-time-label {
+  font-size: 9px;
+  fill: rgba(255, 255, 255, 0.35);
+}
+
+.chart-value-label {
+  font-size: 9px;
+  fill: rgba(255, 255, 255, 0.3);
+}
+
+.chart-grid-line {
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 0.5;
+}
+
+/* ---- Model detail cards ---- */
+.model-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.model-detail-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+.model-detail-card__color {
+  width: 4px;
+  height: 32px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.model-detail-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.model-detail-card__name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.model-detail-card__meta {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.model-detail-card__stat {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.model-detail-card__stat-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.model-detail-card__stat-label {
+  font-size: 0.58rem;
+  color: var(--text-muted);
+}

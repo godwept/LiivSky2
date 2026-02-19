@@ -21,6 +21,11 @@
   filter: drop-shadow(0 0 4px var(--badge-accent, #80cbc4));
 }
 
+.badge-icon .wi {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
 .badge-value {
   font-size: 0.9rem;
   font-weight: 700;

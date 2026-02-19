@@ -29,6 +29,11 @@
   height: 32px;
 }
 
+.metric-icon .wi {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
 .metric-value {
   font-size: 1.15rem;
   font-weight: 700;

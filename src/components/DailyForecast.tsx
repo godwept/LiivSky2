@@ -3,6 +3,7 @@
  */
 import { useState } from 'react';
 import type { DailyForecastItem } from '../types';
+import { getWeatherIconPresentation } from './weatherIconMap';
 import './DailyForecast.css';
 
 interface DailyForecastProps {
@@ -14,43 +15,11 @@ interface DailyForecastProps {
 }
 
 function DailyIcon({ icon }: { icon: string }) {
-  if (icon === 'rain') {
-    return (
-      <svg viewBox="0 0 24 24" width="24" height="24" className="daily-icon" aria-hidden>
-        <path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.99 5.99 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="#64b5f6" opacity="0.8" />
-        <line x1="9" y1="19" x2="8" y2="22" stroke="#42a5f5" strokeWidth="1.7" strokeLinecap="round" />
-        <line x1="13" y1="19" x2="12" y2="22" stroke="#42a5f5" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (icon === 'cloudy') {
-    return (
-      <svg viewBox="0 0 24 24" width="24" height="24" className="daily-icon" aria-hidden>
-        <path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.99 5.99 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="#90a4ae" opacity="0.82" />
-      </svg>
-    );
-  }
-
-  if (icon === 'clear') {
-    return (
-      <svg viewBox="0 0 24 24" width="24" height="24" className="daily-icon" aria-hidden>
-        <circle cx="12" cy="12" r="5" fill="#ffd54f" />
-        <g stroke="#ffd54f" strokeWidth="1.8" strokeLinecap="round">
-          <line x1="12" y1="2.5" x2="12" y2="5" />
-          <line x1="12" y1="19" x2="12" y2="21.5" />
-          <line x1="2.5" y1="12" x2="5" y2="12" />
-          <line x1="19" y1="12" x2="21.5" y2="12" />
-        </g>
-      </svg>
-    );
-  }
-
+  const { className, color } = getWeatherIconPresentation(icon);
   return (
-    <svg viewBox="0 0 24 24" width="24" height="24" className="daily-icon" aria-hidden>
-      <circle cx="9" cy="9" r="4.5" fill="#ffd54f" opacity="0.9" />
-      <path d="M18.5 18h-11A3.5 3.5 0 0 1 7 11.05a4.5 4.5 0 0 1 8.45-1.55A3 3 0 0 1 18.5 12.5v.01A3 3 0 0 1 18.5 18z" fill="#90caf9" opacity="0.9" />
-    </svg>
+    <span className="daily-icon" style={{ color }}>
+      <i className={`wi ${className}`} aria-hidden />
+    </span>
   );
 }
 
