@@ -1,0 +1,160 @@
+/* ===== SatellitePasses — upcoming visible satellite passes ===== */
+
+.sat-section {
+  width: 100%;
+  max-width: 600px;
+  margin: 1.2rem auto 0;
+}
+
+.sat-header {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, rgba(255,255,255,0.6));
+  margin-bottom: 0.5rem;
+  padding-left: 2px;
+}
+
+.sat-loading,
+.sat-empty {
+  font-size: 0.7rem;
+  color: var(--text-muted, rgba(255,255,255,0.4));
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* ---- Pass list ---- */
+.sat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--glass-border, rgba(255,255,255,0.08));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sat-pass {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--glass-bg, rgba(255,255,255,0.04));
+  font-size: 0.68rem;
+  color: var(--text-secondary, rgba(255,255,255,0.6));
+  transition: background 0.15s;
+}
+
+.sat-pass:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.sat-pass__name {
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sat-pass__date {
+  color: var(--text-muted, rgba(255,255,255,0.4));
+  font-size: 0.62rem;
+}
+
+.sat-pass__time {
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+  font-variant-numeric: tabular-nums;
+}
+
+.sat-pass__dir {
+  color: var(--text-muted, rgba(255,255,255,0.4));
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+
+.sat-pass__el {
+  color: rgba(138, 100, 255, 0.8);
+  font-weight: 600;
+  text-align: right;
+  min-width: 26px;
+}
+
+.sat-pass__dur {
+  color: var(--text-muted, rgba(255,255,255,0.4));
+  font-size: 0.6rem;
+  text-align: right;
+  min-width: 28px;
+}
+
+.sat-pass__mag {
+  font-size: 0.58rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sat-pass__mag--bright {
+  color: #ffd54f;
+  border-color: rgba(255,213,79,0.2);
+  background: rgba(255,213,79,0.06);
+}
+
+/* ---- Footer ---- */
+.sat-footer {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.55rem;
+  color: var(--text-muted, rgba(255,255,255,0.4));
+  margin-top: 0.4rem;
+}
+
+.sat-footer a {
+  color: rgba(138, 100, 255, 0.7);
+  text-decoration: none;
+}
+
+/* ---- Responsive: stack on narrow screens ---- */
+@media (max-width: 420px) {
+  .sat-pass {
+    grid-template-columns: 1fr auto auto;
+    grid-template-rows: auto auto;
+    gap: 3px 8px;
+    padding: 8px 10px;
+  }
+  /* Row 1: name · time · brightness badge */
+  .sat-pass__name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .sat-pass__date {
+    /* Not enough space on mobile — hide it */
+    display: none;
+  }
+  .sat-pass__time {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .sat-pass__mag {
+    grid-column: 3;
+    grid-row: 1;
+    display: block;
+  }
+  /* Row 2: direction · elevation · duration */
+  .sat-pass__dir {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .sat-pass__el {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .sat-pass__dur {
+    grid-column: 3;
+    grid-row: 2;
+    text-align: right;
+  }
+}

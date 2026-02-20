@@ -112,3 +112,34 @@ export interface DarkSkyForecast {
   /** 3-hourly forecast items */
   items: DarkSkyForecastItem[];
 }
+
+// ======== Satellite visual passes (N2YO) ========
+
+/** A single visible satellite pass. */
+export interface SatellitePass {
+  /** Satellite name (e.g. "ISS (ZARYA)") */
+  satName: string;
+  /** NORAD catalog ID */
+  satId: number;
+  /** Pass start UTC timestamp (seconds) */
+  startUTC: number;
+  /** Max elevation in degrees above horizon */
+  maxEl: number;
+  /** Duration of visibility in seconds */
+  duration: number;
+  /** Start azimuth label (e.g. "NW") */
+  startAz: string;
+  /** Start compass degrees */
+  startAzCompass: number;
+  /** End azimuth label */
+  endAz: string;
+  /** End compass degrees */
+  endAzCompass: number;
+  /** Apparent magnitude (lower = brighter, e.g. -3.5 for ISS) */
+  mag: number;
+}
+
+/** Response from our worker satellite passes endpoint. */
+export interface SatellitePassesResponse {
+  passes: SatellitePass[];
+}

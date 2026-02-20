@@ -73,4 +73,5 @@ export interface ErrorEnvelope {
 export interface Env {
   CORS_ORIGIN?: string;
   TWN_API_KEY?: string;
+  N2YO_API_KEY?: string;
 }

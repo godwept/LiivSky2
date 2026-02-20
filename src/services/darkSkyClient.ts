@@ -23,6 +23,12 @@ import type {
 
 const API_BASE = 'https://www.7timer.info/bin/api.pl';
 
+/**
+ * 7Timer uses -9999 as a sentinel "no data" value for numeric fields.
+ * Any timestep containing sentinel values must be discarded.
+ */
+const SENTINEL = -9999;
+
 /** Cloud cover value → approximate percentage midpoint */
 const CLOUD_COVER_PCT: Record<CloudCoverValue, number> = {
   1: 3, 2: 12, 3: 25, 4: 37, 5: 50, 6: 62, 7: 75, 8: 87, 9: 97,
@@ -92,12 +98,14 @@ function computeStargazingScore(ts: AstroTimestep): number {
   const windScore = ((8 - ts.wind10m.speed) / 7) * 100;
   const comfortScore = (humScore + windScore) / 2;
 
-  return Math.round(
+  const raw =
     cloudScore * 0.45 +
     transScore * 0.25 +
     seeingScore * 0.20 +
-    comfortScore * 0.10,
-  );
+    comfortScore * 0.10;
+
+  // Clamp to valid range as a safety net against any unexpected API values.
+  return Math.round(Math.max(0, Math.min(100, raw)));
 }
 
 /**
@@ -155,7 +163,18 @@ export async function fetchDarkSkyForecast(
   const data = (await res.json()) as AstroApiResponse;
   const initDate = parseInitTime(data.init);
 
-  const items = data.dataseries.map((ts) => processTimestep(ts, initDate));
+  // Filter out timesteps where 7Timer has emitted -9999 sentinel values.
+  // These appear when model data is unavailable for that timepoint and
+  // would otherwise produce wildly out-of-range scores.
+  const validSeries = data.dataseries.filter(
+    (ts) =>
+      ts.seeing !== SENTINEL &&
+      ts.transparency !== SENTINEL &&
+      ts.rh2m !== SENTINEL &&
+      ts.lifted_index !== SENTINEL,
+  );
+
+  const items = validSeries.map((ts) => processTimestep(ts, initDate));
 
   return {
     lat,

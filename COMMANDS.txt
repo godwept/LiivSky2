@@ -1,0 +1,8 @@
+# Install dependencies (if not already done)
+npm install
+
+# Build then deploy the frontend (always run together)
+npm run build && npx wrangler pages deploy ./dist --project-name=liivsky2
+
+# Publish your Worker
+npx wrangler deploy

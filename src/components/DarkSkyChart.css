@@ -1,0 +1,103 @@
+/* ===== DarkSkyChart — interactive forecast chart ===== */
+
+.dsc-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem auto 0;
+}
+
+/* ---- Chart container (no scroll) ---- */
+.dsc-chart {
+  border-radius: 12px;
+  background: var(--glass-bg, rgba(255,255,255,0.04));
+  border: 1px solid var(--glass-border, rgba(255,255,255,0.08));
+  cursor: crosshair;
+}
+
+.dsc-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Tooltip (compact pill, follows cursor) ---- */
+.dsc-tooltip {
+  position: absolute;
+  z-index: 20;
+  transform: translate(-50%, -100%) translateY(-10px);
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  background: rgba(14, 16, 26, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.4),
+    0 0 0 1px var(--tip-color, rgba(138,100,255,0.2));
+  transition: left 0.08s ease-out, top 0.08s ease-out;
+}
+
+.dsc-tooltip__score {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dsc-tooltip__verdict {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-secondary, rgba(255,255,255,0.6));
+}
+
+.dsc-tooltip__time {
+  font-size: 0.6rem;
+  color: var(--text-muted, rgba(255,255,255,0.4));
+}
+
+.dsc-tooltip__sep {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.15);
+}
+
+.dsc-tooltip__metric {
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+
+/* ---- Legend row ---- */
+.dsc-legend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.dsc-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  color: var(--text-muted, rgba(255,255,255,0.4));
+}
+
+.dsc-legend__line {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.dsc-legend__night {
+  display: inline-block;
+  width: 12px;
+  height: 10px;
+  border-radius: 3px;
+  background: rgba(138,100,255,0.15);
+  border: 1px solid rgba(138,100,255,0.25);
+}

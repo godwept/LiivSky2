@@ -1,0 +1,146 @@
+/**
+ * Styles for DarkSkyHero — Sky Dial hero component.
+ * No card — sits directly on the page background like the temperature gauge.
+ */
+
+/* ---- Container (transparent, centered) ---- */
+.dsh-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+  margin: -0.25rem auto 0;
+  padding: 0;
+  position: relative;
+}
+
+/* ---- Location + time row ---- */
+.dsh-hero__location-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.15rem;
+  justify-content: center;
+}
+
+.dsh-hero__location-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.dsh-hero__time-chip {
+  font-size: 0.58rem;
+  font-weight: 500;
+  color: rgba(138, 100, 255, 0.65);
+  background: rgba(138, 100, 255, 0.08);
+  border: 1px solid rgba(138, 100, 255, 0.15);
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+  margin-left: 0.2rem;
+}
+
+/* ---- SVG dial ---- */
+.dsh-hero__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0 30px rgba(100, 80, 200, 0.14));
+}
+
+/* End-cap pulse animation */
+.dsh-cap-pulse {
+  animation: dsh-cap-pulse 3s ease-in-out infinite;
+}
+
+@keyframes dsh-cap-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 0.45; }
+}
+
+/* ---- Ring legend ---- */
+.dsh-hero__legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-top: -0.5rem;
+}
+
+.dsh-hero__legend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dsh-hero__legend-swatch {
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.dsh-hero__legend-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08rem;
+}
+
+.dsh-hero__legend-name {
+  font-size: 0.52rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.dsh-hero__legend-value {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 90px;
+}
+
+/* ---- Comfort strip ---- */
+.dsh-hero__comfort {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.6rem;
+  padding: 0.42rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+}
+
+.dsh-hero__comfort-item {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.dsh-hero__comfort-item--warn {
+  color: #ffa726;
+}
+
+.dsh-hero__comfort-icon {
+  font-size: 0.68rem;
+  opacity: 0.55;
+  line-height: 1;
+}
+
+.dsh-hero__comfort-sep {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}

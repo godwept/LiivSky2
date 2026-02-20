@@ -33,6 +33,10 @@ export default {
         return await handleWeatherHome(url, env);
       }
 
+      if (url.pathname === '/api/v1/satellites/passes') {
+        return await handleSatellitePasses(url, env);
+      }
+
       return errorResponse(404, 'not_found', 'Endpoint not found.', undefined, env);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown worker error.';
@@ -108,4 +112,114 @@ function toUnit(value: string): TemperatureUnit | null {
   }
 
   return null;
+}
+
+// ======== Satellite passes (N2YO) ========
+
+/** Well-known bright/large satellites to query for visual passes. */
+const TRACKED_SATS = [
+  { id: 25544, name: 'ISS' },
+  { id: 20580, name: 'Hubble' },
+  { id: 54216, name: 'Tiangong' },
+  { id: 27386, name: 'Envisat' },
+  { id: 25078, name: 'Iridium 8' },
+  { id: 43226, name: 'Rocket Body (Falcon 9)' },
+  { id: 28654, name: 'NOAA 18' },
+  { id: 33591, name: 'NOAA 19' },
+  { id: 28376, name: 'Lacrosse 5' },
+  { id: 39084, name: 'Cosmos 2486' },
+  { id: 40258, name: 'Yaogan 22' },
+  { id: 37820, name: 'Tiangong 1 DEB' },
+  { id: 44420, name: 'CZ-5B Rocket Body' },
+  { id: 57320, name: 'Starlink-5001' },
+];
+
+interface N2YoPass {
+  startUTC: number;
+  startAz: number;
+  startAzCompass: string;
+  endAz: number;
+  endAzCompass: string;
+  maxEl: number;
+  duration: number;
+  mag: number;
+}
+
+interface N2YoResponse {
+  info?: { satid: number; satname: string; passescount: number };
+  passes?: N2YoPass[];
+}
+
+async function handleSatellitePasses(url: URL, env: Env): Promise<Response> {
+  const lat = toFiniteNumber(url.searchParams.get('lat'));
+  const lon = toFiniteNumber(url.searchParams.get('lon'));
+
+  if (lat === null || lon === null) {
+    return errorResponse(400, 'invalid_coordinates', 'lat and lon must both be valid numbers.', undefined, env);
+  }
+
+  if (!env.N2YO_API_KEY) {
+    return errorResponse(500, 'config_error', 'N2YO API key is not configured.', undefined, env);
+  }
+
+  const alt = 0; // metres above sea level — default
+  const days = 10; // look ahead
+  const minVisibility = 60; // minimum seconds visible
+
+  const allPasses: Array<{
+    satName: string;
+    satId: number;
+    startUTC: number;
+    maxEl: number;
+    duration: number;
+    startAz: string;
+    startAzCompass: number;
+    endAz: string;
+    endAzCompass: number;
+    mag: number;
+  }> = [];
+
+  // Fetch passes for each tracked satellite in parallel
+  try {
+    await Promise.allSettled(
+      TRACKED_SATS.map(async (sat) => {
+        const apiUrl = `https://api.n2yo.com/rest/v1/satellite/visualpasses/${sat.id}/${lat}/${lon}/${alt}/${days}/${minVisibility}?apiKey=${env.N2YO_API_KEY}`;
+        const res = await fetch(apiUrl);
+        if (!res.ok) return;
+        const text = await res.text();
+        let data: N2YoResponse;
+        try {
+          data = JSON.parse(text) as N2YoResponse;
+        } catch {
+          return; // non-JSON response, skip
+        }
+        if (!data.passes || !Array.isArray(data.passes)) return;
+        const satName = data.info?.satname ?? sat.name;
+        for (const p of data.passes) {
+          allPasses.push({
+            satName,
+            satId: sat.id,
+            startUTC: p.startUTC,
+            maxEl: p.maxEl,
+            duration: p.duration,
+            startAz: p.startAzCompass ?? '',
+            startAzCompass: p.startAz ?? 0,
+            endAz: p.endAzCompass ?? '',
+            endAzCompass: p.endAz ?? 0,
+            mag: typeof p.mag === 'number' ? p.mag : 0,
+          });
+        }
+      }),
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown N2YO fetch error';
+    return errorResponse(502, 'upstream_error', 'Failed to fetch satellite passes.', msg, env);
+  }
+
+  // Sort by time, keep all returned passes (N2YO already filters to visible)
+  const passes = allPasses
+    .sort((a, b) => a.startUTC - b.startUTC)
+    .slice(0, 20);
+
+  return withCache(jsonResponse({ passes }, { status: 200 }, env), 1800);
 }

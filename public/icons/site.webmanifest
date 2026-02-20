@@ -1,0 +1,28 @@
+{
+  "name": "LiivSky",
+  "short_name": "LiivSky",
+  "description": "Weather dashboard with astronomy and dark sky forecasts",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0a0c14",
+  "background_color": "#0a0c14",
+  "icons": [
+    {
+      "src": "/icons/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}
