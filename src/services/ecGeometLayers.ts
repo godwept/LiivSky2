@@ -151,7 +151,7 @@ export type ModelMapParamId =
   | 'clouds';
 
 /** Identifier for a model available as WMS */
-export type ModelMapModelId = 'hrdps' | 'rdps' | 'gdps';
+export type ModelMapModelId = 'hrdps' | 'rdps' | 'gdps' | 'gfs' | 'nam' | 'hrrr';
 
 /** Metadata for a selectable model-map parameter */
 export interface ModelMapParam {
@@ -167,7 +167,16 @@ export interface ModelMapDef {
   description: string;
   resolution: string;
   color: string;
-  /** WMS layer name pattern keyed by parameter. */
+  /** Human-readable provider name shown in the hero */
+  provider: string;
+  /** WMS base URL for GetCapabilities and tile requests */
+  wmsUrl: string;
+  /**
+   * Extra WMS parameters per product, e.g. `ELEVATION` for ncWMS
+   * height-above-ground layers.  Spread directly into tile requests.
+   */
+  extraParams?: Partial<Record<ModelMapParamId, Record<string, string>>>;
+  /** WMS layer name keyed by product parameter */
   layers: Record<ModelMapParamId, string>;
 }
 
@@ -192,13 +201,24 @@ export const MODEL_MAP_PARAMS: ModelMapParam[] = [
  * All support the WMS TIME dimension for forecast valid times.
  * @see https://eccc-msc.github.io/open-data/msc-geomet/wms_en/
  */
+/* Base URLs for UCAR THREDDS ncWMS model endpoints (free, no key required) */
+export const UCAR_GFS_WMS_URL =
+  'https://thredds.ucar.edu/thredds/wms/grib/NCEP/GFS/Global_0p25deg/Best';
+export const UCAR_NAM_WMS_URL =
+  'https://thredds.ucar.edu/thredds/wms/grib/NCEP/NAM/CONUS_12km/Best';
+export const UCAR_HRRR_WMS_URL =
+  'https://thredds.ucar.edu/thredds/wms/grib/NCEP/HRRR/CONUS_2p5km/Best';
+
 export const MODEL_MAP_DEFS: ModelMapDef[] = [
+  /* ---- Environment Canada models (EC GeoMet) ---- */
   {
     id: 'hrdps',
     label: 'HRDPS',
     description: 'High Res Deterministic (Canada)',
     resolution: '2.5 km',
     color: '#66bb6a',
+    provider: 'Environment Canada',
+    wmsUrl: EC_GEOMET_WMS_URL,
     layers: {
       temperature:   'HRDPS.CONTINENTAL_TT',
       precipitation: 'HRDPS.CONTINENTAL_PR',
@@ -214,6 +234,8 @@ export const MODEL_MAP_DEFS: ModelMapDef[] = [
     description: 'Regional Deterministic (Canada)',
     resolution: '10 km',
     color: '#ffa726',
+    provider: 'Environment Canada',
+    wmsUrl: EC_GEOMET_WMS_URL,
     layers: {
       temperature:   'RDPS.ETA_TT',
       precipitation: 'RDPS.ETA_PR',
@@ -229,6 +251,8 @@ export const MODEL_MAP_DEFS: ModelMapDef[] = [
     description: 'Global Deterministic (Canada)',
     resolution: '15 km',
     color: '#ab47bc',
+    provider: 'Environment Canada',
+    wmsUrl: EC_GEOMET_WMS_URL,
     layers: {
       temperature:   'GDPS.ETA_TT',
       precipitation: 'GDPS.ETA_PR',
@@ -236,6 +260,74 @@ export const MODEL_MAP_DEFS: ModelMapDef[] = [
       pressure:      'GDPS.ETA_PN',
       humidity:      'GDPS.ETA_HR',
       clouds:        'GDPS.ETA_NT',
+    },
+  },
+
+  /* ---- NOAA models (UCAR THREDDS ncWMS) ---- */
+  {
+    id: 'gfs',
+    label: 'GFS',
+    description: 'Global Forecast System (NOAA)',
+    resolution: '0.25°',
+    color: '#42a5f5',
+    provider: 'NOAA / NCEP',
+    wmsUrl: UCAR_GFS_WMS_URL,
+    extraParams: {
+      temperature:   { ELEVATION: '2' },
+      wind:          { ELEVATION: '10' },
+      humidity:      { ELEVATION: '2' },
+    },
+    layers: {
+      temperature:   'Temperature_height_above_ground',
+      precipitation: 'Total_precipitation_surface_Mixed_intervals_Accumulation',
+      wind:          'Wind_speed_height_above_ground',
+      pressure:      'Pressure_reduced_to_MSL_msl',
+      humidity:      'Relative_humidity_height_above_ground',
+      clouds:        'Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average',
+    },
+  },
+  {
+    id: 'nam',
+    label: 'NAM',
+    description: 'North American Mesoscale (NOAA)',
+    resolution: '12 km',
+    color: '#ef5350',
+    provider: 'NOAA / NCEP',
+    wmsUrl: UCAR_NAM_WMS_URL,
+    extraParams: {
+      temperature:   { ELEVATION: '2' },
+      wind:          { ELEVATION: '10' },
+      humidity:      { ELEVATION: '2' },
+    },
+    layers: {
+      temperature:   'Temperature_height_above_ground',
+      precipitation: 'Total_precipitation_surface_Mixed_intervals_Accumulation',
+      wind:          'Wind_speed_height_above_ground',
+      pressure:      'Pressure_reduced_to_MSL_msl',
+      humidity:      'Relative_humidity_height_above_ground',
+      clouds:        'Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average',
+    },
+  },
+  {
+    id: 'hrrr',
+    label: 'HRRR',
+    description: 'High-Res Rapid Refresh (NOAA)',
+    resolution: '3 km',
+    color: '#ff7043',
+    provider: 'NOAA / NCEP',
+    wmsUrl: UCAR_HRRR_WMS_URL,
+    extraParams: {
+      temperature:   { ELEVATION: '2' },
+      wind:          { ELEVATION: '10' },
+      humidity:      { ELEVATION: '2' },
+    },
+    layers: {
+      temperature:   'Temperature_height_above_ground',
+      precipitation: 'Total_precipitation_surface_Mixed_intervals_Accumulation',
+      wind:          'Wind_speed_height_above_ground',
+      pressure:      'Pressure_reduced_to_MSL_msl',
+      humidity:      'Relative_humidity_height_above_ground',
+      clouds:        'Total_cloud_cover_entire_atmosphere_Mixed_intervals_Average',
     },
   },
 ];

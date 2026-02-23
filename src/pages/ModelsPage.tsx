@@ -1,9 +1,13 @@
 /**
- * ModelsPage — Forecast model comparison view.
+ * ModelsPage — Map-first NWP model viewer.
  *
- * Two sub-views accessible via a Charts / Maps toggle:
- *   - Charts: side-by-side line chart comparison from Open-Meteo
- *   - Maps:   animated WMS model overlays from EC GeoMet
+ * Layout (top → bottom):
+ *   ModelHero  → map model pills → region pills → product category tabs
+ *   → product chips → ModelMapViewer (controlled)
+ *   → <details> collapsible chart comparison section
+ *
+ * State is owned here and passed down; ModelMapViewer is a pure
+ * controlled component that renders the map + animation bar.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWeatherStore } from '../store/weatherStore';
@@ -13,15 +17,26 @@ import {
   fetchModelComparison,
 } from '../services/modelClient';
 import ModelMapViewer from '../components/ModelMapViewer';
+import ModelHero from '../components/ModelHero';
+import {
+  MODEL_REGIONS,
+  DEFAULT_REGION_ID,
+} from '../services/modelRegions';
+import {
+  MODEL_PRODUCTS,
+  PRODUCT_CATEGORIES,
+  DEFAULT_PRODUCT_ID,
+  DEFAULT_CATEGORY_ID,
+} from '../services/modelProducts';
+import { MODEL_MAP_DEFS } from '../services/ecGeometLayers';
+import type { ModelMapModelId, ModelMapParamId } from '../services/ecGeometLayers';
 import type { ModelId, ModelParameter, ModelComparisonData } from '../types/models';
 import './ModelsPage.css';
 
-/** Sub-view mode */
-type ViewMode = 'charts' | 'maps';
-
-/** Models enabled by default on first load */
-const DEFAULT_MODELS: ModelId[] = ['gfs', 'ecmwf'];
-const DEFAULT_PARAM: ModelParameter = 'temperature_2m';
+/** Models enabled by default in the chart comparison view */
+const DEFAULT_CHART_MODELS: ModelId[] = ['gfs', 'ecmwf'];
+const DEFAULT_CHART_PARAM: ModelParameter = 'temperature_2m';
+const DEFAULT_MAP_MODEL: ModelMapModelId = 'hrdps';
 
 /** Chart dimensions */
 const CHART_W = 560;
@@ -33,47 +48,66 @@ export default function ModelsPage() {
   const lon = useWeatherStore((s) => s.lon);
   const location = useWeatherStore((s) => s.location);
 
-  const [viewMode, setViewMode] = useState<ViewMode>('charts');
-  const [activeModels, setActiveModels] = useState<ModelId[]>(DEFAULT_MODELS);
-  const [parameter, setParameter] = useState<ModelParameter>(DEFAULT_PARAM);
-  const [data, setData] = useState<ModelComparisonData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  /* ---- Map state ---- */
+  const [selectedMapModel, setSelectedMapModel] = useState<ModelMapModelId>(DEFAULT_MAP_MODEL);
+  const initialRegion = MODEL_REGIONS.find((r) => r.id === DEFAULT_REGION_ID)!;
+  const [selectedRegionId, setSelectedRegionId] = useState<string>(DEFAULT_REGION_ID);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(DEFAULT_CATEGORY_ID);
+  const [selectedProductId, setSelectedProductId] = useState(DEFAULT_PRODUCT_ID);
+  const [heroForecastTime, setHeroForecastTime] = useState('—');
 
-  /** Toggle a model on/off */
-  const toggleModel = useCallback((id: ModelId) => {
+  /* ---- Chart state ---- */
+  const [activeModels, setActiveModels] = useState<ModelId[]>(DEFAULT_CHART_MODELS);
+  const [parameter, setParameter] = useState<ModelParameter>(DEFAULT_CHART_PARAM);
+  const [data, setData] = useState<ModelComparisonData | null>(null);
+  const [chartLoading, setChartLoading] = useState(false);
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  /* ---- Derived values ---- */
+  const selectedRegion = MODEL_REGIONS.find((r) => r.id === selectedRegionId) ?? initialRegion;
+  const mapCenter: [number, number] = selectedRegion.id === 'local'
+    ? [lat, lon]
+    : selectedRegion.center;
+  const mapZoom = selectedRegion.zoom;
+
+  const selectedProduct = MODEL_PRODUCTS.find((p) => p.id === selectedProductId)
+    ?? MODEL_PRODUCTS.find((p) => p.id === DEFAULT_PRODUCT_ID)!;
+  const mapParam: ModelMapParamId = selectedProduct.mapParam ?? 'temperature';
+
+  const categoryProducts = MODEL_PRODUCTS.filter(
+    (p) => p.categoryId === selectedCategoryId,
+  );
+
+  const mapModelDef = MODEL_MAP_DEFS.find((m) => m.id === selectedMapModel)!;
+
+  /* ---- Toggle a chart model on/off ---- */
+  const toggleChartModel = useCallback((id: ModelId) => {
     setActiveModels((prev) =>
-      prev.includes(id)
-        ? prev.filter((m) => m !== id)
-        : [...prev, id],
+      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id],
     );
   }, []);
 
-  /** Fetch model data whenever selection changes */
+  /* ---- Select a product: keep chart param in sync ---- */
+  const selectProduct = useCallback((productId: string) => {
+    setSelectedProductId(productId);
+    const prod = MODEL_PRODUCTS.find((p) => p.id === productId);
+    if (prod?.chartParam) setParameter(prod.chartParam);
+  }, []);
+
+  /* ---- Fetch chart data ---- */
   useEffect(() => {
-    if (activeModels.length === 0) {
-      setData(null);
-      return;
-    }
-
+    if (activeModels.length === 0) { setData(null); return; }
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-
+    setChartLoading(true);
+    setChartError(null);
     fetchModelComparison(activeModels, parameter, lat, lon)
-      .then((result) => {
-        if (!cancelled) {
-          setData(result);
-          setLoading(false);
-        }
-      })
+      .then((result) => { if (!cancelled) { setData(result); setChartLoading(false); } })
       .catch((err) => {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Failed to fetch model data');
-          setLoading(false);
+          setChartError(err instanceof Error ? err.message : 'Failed to fetch model data');
+          setChartLoading(false);
         }
       });
-
     return () => { cancelled = true; };
   }, [activeModels, parameter, lat, lon]);
 
@@ -81,135 +115,191 @@ export default function ModelsPage() {
 
   return (
     <div className="models-page">
-      {/* Header */}
-      <div className="models-header">
-        <h1>Forecast Models</h1>
-        <p>{location} — {lat.toFixed(2)}°N, {Math.abs(lon).toFixed(2)}°W</p>
-      </div>
 
-      {/* Charts / Maps toggle */}
-      <div className="models-view-toggle">
-        <button
-          className={`view-toggle-btn${viewMode === 'charts' ? ' view-toggle-btn--active' : ''}`}
-          onClick={() => setViewMode('charts')}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" opacity={viewMode === 'charts' ? 1 : 0.5}>
-            <path d="M3.5 18.5l6-6 4 4L22 6.92 20.59 5.5l-7.09 8-4-4L2 17l1.5 1.5z" />
-          </svg>
-          Charts
-        </button>
-        <button
-          className={`view-toggle-btn${viewMode === 'maps' ? ' view-toggle-btn--active' : ''}`}
-          onClick={() => setViewMode('maps')}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" opacity={viewMode === 'maps' ? 1 : 0.5}>
-            <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z" />
-          </svg>
-          Maps
-        </button>
-      </div>
+      {/* ---- Hero ---- */}
+      <ModelHero
+        modelLabel={mapModelDef.label}
+        modelColor={mapModelDef.color}
+        modelResolution={mapModelDef.resolution}
+        modelProvider={mapModelDef.provider}
+        categoryLabel={PRODUCT_CATEGORIES.find((c) => c.id === selectedCategoryId)?.label ?? ''}
+        productLabel={selectedProduct.label}
+        regionLabel={selectedRegion.label}
+        forecastTime={heroForecastTime}
+        location={location}
+      />
 
-      {/* ---- Charts sub-view ---- */}
-      {viewMode === 'charts' && (
-        <>
-      {/* Parameter selector */}
-      <div className="models-param-bar" role="tablist" aria-label="Forecast parameter">
-        {PARAMETER_CATALOG.map((p) => (
+      {/* ---- Map model pills (all models from MODEL_MAP_DEFS) ---- */}
+      <div className="models-map-model-bar">
+        {MODEL_MAP_DEFS.map((m) => (
           <button
-            key={p.id}
-            className={`param-chip${parameter === p.id ? ' param-chip--active' : ''}`}
-            role="tab"
-            aria-selected={parameter === p.id}
-            onClick={() => setParameter(p.id)}
+            key={m.id}
+            className={`map-model-pill${selectedMapModel === m.id ? ' map-model-pill--active' : ''}`}
+            style={selectedMapModel === m.id
+              ? { borderColor: `${m.color}55`, color: m.color }
+              : undefined}
+            onClick={() => setSelectedMapModel(m.id)}
           >
-            {p.label}
+            <span
+              className="map-model-pill__dot"
+              style={{ background: selectedMapModel === m.id ? m.color : 'rgba(255,255,255,0.18)' }}
+            />
+            <span className="map-model-pill__name">{m.label}</span>
+            <span className="map-model-pill__res">{m.resolution}</span>
           </button>
         ))}
       </div>
 
-      {/* Model toggle pills */}
-      <div className="models-toggle-bar">
-        {MODEL_CATALOG.map((m) => {
-          const active = activeModels.includes(m.id);
-          return (
-            <button
-              key={m.id}
-              className={`model-pill${active ? ' model-pill--active' : ''}`}
-              style={active ? { borderColor: `${m.color}55` } : undefined}
-              onClick={() => toggleModel(m.id)}
-              aria-pressed={active}
-            >
-              <span
-                className="model-pill__dot"
-                style={{ background: active ? m.color : 'rgba(255,255,255,0.15)' }}
-              />
-              <span className="model-pill__name">{m.label}</span>
-              <span className="model-pill__res">{m.resolution}</span>
-            </button>
-          );
-        })}
+      {/* ---- Region pills ---- */}
+      <div className="models-region-bar" role="tablist" aria-label="Map region">
+        {MODEL_REGIONS.map((r) => (
+          <button
+            key={r.id}
+            className={`region-pill${selectedRegionId === r.id ? ' region-pill--active' : ''}`}
+            role="tab"
+            aria-selected={selectedRegionId === r.id}
+            onClick={() => setSelectedRegionId(r.id)}
+          >
+            {r.label}
+          </button>
+        ))}
       </div>
 
-      {/* Chart area */}
-      {loading && (
-        <div className="models-loading">
-          <div className="models-spinner" />
-          Fetching model data…
-        </div>
-      )}
+      {/* ---- Product category tabs ---- */}
+      <div className="models-category-bar" role="tablist" aria-label="Product category">
+        {PRODUCT_CATEGORIES.map((c) => (
+          <button
+            key={c.id}
+            className={`category-tab${selectedCategoryId === c.id ? ' category-tab--active' : ''}`}
+            role="tab"
+            aria-selected={selectedCategoryId === c.id}
+            onClick={() => setSelectedCategoryId(c.id)}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
 
-      {error && <div className="models-error">{error}</div>}
+      {/* ---- Product chips ---- */}
+      <div className="models-product-bar">
+        {categoryProducts.map((p) => (
+          <button
+            key={p.id}
+            className={`product-chip${selectedProductId === p.id ? ' product-chip--active' : ''}${p.comingSoon ? ' product-chip--soon' : ''}`}
+            disabled={p.comingSoon}
+            onClick={() => !p.comingSoon && selectProduct(p.id)}
+          >
+            {p.label}
+            {p.comingSoon && <span className="product-chip__badge">Soon</span>}
+          </button>
+        ))}
+      </div>
 
-      {!loading && !error && data && data.forecasts.length > 0 && (
-        <ModelChart
-          data={data}
-          paramInfo={paramInfo}
-        />
-      )}
+      {/* ---- Map viewer ---- */}
+      <ModelMapViewer
+        model={selectedMapModel}
+        param={mapParam}
+        mapCenter={mapCenter}
+        mapZoom={mapZoom}
+        onTimeChange={setHeroForecastTime}
+      />
 
-      {!loading && !error && activeModels.length === 0 && (
-        <div className="models-loading">
-          Select at least one model to view forecasts.
-        </div>
-      )}
+      {/* ---- Collapsible chart comparison ---- */}
+      <details className="models-chart-section">
+        <summary className="models-chart-summary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3.5 18.5l6-6 4 4L22 6.92 20.59 5.5l-7.09 8-4-4L2 17l1.5 1.5z" />
+          </svg>
+          Model Chart Comparison
+          <span className="models-chart-summary__caret" aria-hidden="true" />
+        </summary>
 
-      {/* Model detail cards */}
-      {!loading && data && data.forecasts.length > 0 && (
-        <div className="model-details">
-          {data.forecasts.map((fc) => {
-            const info = MODEL_CATALOG.find((m) => m.id === fc.modelId)!;
-            const values = fc.data.map((d) => d.value);
-            const avg = values.length > 0
-              ? (values.reduce((a, b) => a + b, 0) / values.length)
-              : 0;
-            return (
-              <div key={fc.modelId} className="model-detail-card">
-                <div
-                  className="model-detail-card__color"
-                  style={{ background: info.color }}
-                />
-                <div className="model-detail-card__info">
-                  <div className="model-detail-card__name">{info.label}</div>
-                  <div className="model-detail-card__meta">
-                    {info.description} · {info.resolution}
+        <div className="models-chart-body">
+          {/* Parameter selector */}
+          <div className="models-param-bar" role="tablist" aria-label="Chart parameter">
+            {PARAMETER_CATALOG.map((p) => (
+              <button
+                key={p.id}
+                className={`param-chip${parameter === p.id ? ' param-chip--active' : ''}`}
+                role="tab"
+                aria-selected={parameter === p.id}
+                onClick={() => setParameter(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Model toggle pills */}
+          <div className="models-toggle-bar">
+            {MODEL_CATALOG.map((m) => {
+              const active = activeModels.includes(m.id);
+              return (
+                <button
+                  key={m.id}
+                  className={`model-pill${active ? ' model-pill--active' : ''}`}
+                  style={active ? { borderColor: `${m.color}55` } : undefined}
+                  onClick={() => toggleChartModel(m.id)}
+                  aria-pressed={active}
+                >
+                  <span
+                    className="model-pill__dot"
+                    style={{ background: active ? m.color : 'rgba(255,255,255,0.15)' }}
+                  />
+                  <span className="model-pill__name">{m.label}</span>
+                  <span className="model-pill__res">{m.resolution}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {chartLoading && (
+            <div className="models-loading">
+              <div className="models-spinner" />
+              Fetching model data…
+            </div>
+          )}
+
+          {chartError && <div className="models-error">{chartError}</div>}
+
+          {!chartLoading && !chartError && data && data.forecasts.length > 0 && (
+            <ModelChart data={data} paramInfo={paramInfo} />
+          )}
+
+          {!chartLoading && !chartError && activeModels.length === 0 && (
+            <div className="models-loading">Select at least one model.</div>
+          )}
+
+          {!chartLoading && data && data.forecasts.length > 0 && (
+            <div className="model-details">
+              {data.forecasts.map((fc) => {
+                const info = MODEL_CATALOG.find((m) => m.id === fc.modelId)!;
+                const values = fc.data.map((d) => d.value);
+                const avg = values.length > 0
+                  ? values.reduce((a, b) => a + b, 0) / values.length
+                  : 0;
+                return (
+                  <div key={fc.modelId} className="model-detail-card">
+                    <div className="model-detail-card__color" style={{ background: info.color }} />
+                    <div className="model-detail-card__info">
+                      <div className="model-detail-card__name">{info.label}</div>
+                      <div className="model-detail-card__meta">
+                        {info.description} · {info.resolution}
+                      </div>
+                    </div>
+                    <div className="model-detail-card__stat">
+                      <div className="model-detail-card__stat-value">
+                        {avg.toFixed(1)}{paramInfo.unit}
+                      </div>
+                      <div className="model-detail-card__stat-label">avg</div>
+                    </div>
                   </div>
-                </div>
-                <div className="model-detail-card__stat">
-                  <div className="model-detail-card__stat-value">
-                    {avg.toFixed(1)}{paramInfo.unit}
-                  </div>
-                  <div className="model-detail-card__stat-label">avg</div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
-        </>
-      )}
-
-      {/* ---- Maps sub-view ---- */}
-      {viewMode === 'maps' && <ModelMapViewer />}
+      </details>
     </div>
   );
 }

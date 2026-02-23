@@ -43,11 +43,13 @@ export interface ModelMapAnimControls {
 /**
  * Hook to manage model map forecast animation.
  *
- * @param wmsLayerName  The EC GeoMet WMS layer name (e.g. `HRDPS.CONTINENTAL_TT`)
+ * @param wmsLayerName     The WMS layer name (e.g. `HRDPS.CONTINENTAL_TT`)
+ * @param wmsUrl           WMS base URL for GetCapabilities (defaults to EC GeoMet)
  * @param frameIntervalMs  Delay between frames during playback
  */
 export function useModelMapAnimation(
   wmsLayerName: string | null,
+  wmsUrl: string,
   frameIntervalMs = 500,
 ): [ModelMapAnimState, ModelMapAnimControls] {
   const [times, setTimes] = useState<string[]>([]);
@@ -73,7 +75,7 @@ export function useModelMapAnimation(
     setError(null);
     setPlaying(false);
 
-    fetchTimeDimension(wmsLayerName)
+    fetchTimeDimension(wmsLayerName, wmsUrl)
       .then((td) => {
         if (fetchId !== fetchRef.current) return;
         // Take up to MAX_FRAMES evenly spaced from the full list

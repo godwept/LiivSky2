@@ -46,6 +46,11 @@ export interface WmsOverlayDef {
    * Each animation frame swaps the layer name rather than the TIME param.
    */
   forecastMode?: boolean;
+  /**
+   * Extra WMS query parameters appended to every tile request.
+   * Used for e.g. `ELEVATION=2` in UCAR ncWMS height-above-ground layers.
+   */
+  extraParams?: Record<string, string>;
   /** Attribution text for the overlay source */
   attribution?: string;
 }

@@ -1,125 +1,52 @@
 /**
- * Styles for the ModelsPage — forecast model comparison view.
+ * Styles for the ModelsPage — map-first NWP model viewer.
  * Dark glass aesthetic consistent with the rest of the app.
+ *
+ * Sections:
+ *   1. Page wrapper
+ *   2. Map model pills
+ *   3. Region pills
+ *   4. Product category tabs
+ *   5. Product chips
+ *   6. Collapsible chart section
+ *   7. Parameter + model toggle bar (inside chart section)
+ *   8. Chart card + SVG labels
+ *   9. Model detail cards
+ *  10. Loading / error states
  */
 
+/* ================================================================
+   1. Page wrapper
+   ================================================================ */
 .models-page {
-  padding: 1rem 1rem calc(var(--nav-height) + 1.5rem);
+  padding: 0.75rem 0.75rem calc(var(--nav-height) + 1.5rem);
   min-height: 100vh;
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
-}
-
-/* ---- Page header ---- */
-.models-header {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.models-header h1 {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.15rem;
-}
-
-.models-header p {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-/* ---- Charts / Maps toggle ---- */
-.models-view-toggle {
   display: flex;
-  gap: 0.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 0.2rem;
-  margin-bottom: 0.75rem;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
-.view-toggle-btn {
-  flex: 1;
+/* ================================================================
+   2. Map model pills
+   ================================================================ */
+.models-map-model-bar {
   display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.35rem;
-  padding: 0.45rem 0.75rem;
-  border-radius: 10px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.72rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.view-toggle-btn:hover {
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.view-toggle-btn--active {
-  background: rgba(0, 229, 255, 0.1);
-  color: var(--accent-cyan);
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.08);
-}
-
-/* ---- Parameter selector ---- */
-.models-param-bar {
-  display: flex;
-  gap: 0.4rem;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  flex-wrap: nowrap;
 }
+.models-map-model-bar::-webkit-scrollbar { display: none; }
 
-.models-param-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.param-chip {
-  flex-shrink: 0;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  color: var(--text-secondary);
-  font-size: 0.7rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.param-chip:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.param-chip--active {
-  background: rgba(0, 229, 255, 0.12);
-  border-color: rgba(0, 229, 255, 0.35);
-  color: var(--accent-cyan);
-}
-
-/* ---- Model toggle pills ---- */
-.models-toggle-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-}
-
-.model-pill {
+.map-model-pill {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
+  gap: 0.3rem;
+  padding: 0.28rem 0.6rem;
   border-radius: 8px;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
@@ -127,74 +54,309 @@
   font-size: 0.68rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.18s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-
-.model-pill:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+.map-model-pill:hover:not(:disabled) {
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
 }
-
-.model-pill--active {
-  background: rgba(255, 255, 255, 0.06);
+.map-model-pill--active {
+  background: rgba(255,255,255,0.06);
 }
-
-.model-pill__dot {
-  width: 8px;
-  height: 8px;
+.map-model-pill--soon {
+  opacity: 0.42;
+  cursor: default;
+}
+.map-model-pill__dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
-
-.model-pill__name {
-  font-weight: 600;
-}
-
-.model-pill__res {
+.map-model-pill__name { font-weight: 600; }
+.map-model-pill__res {
   color: var(--text-muted);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
+}
+.map-model-pill__badge {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.07);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
 }
 
-/* ---- Chart container ---- */
-.models-chart-card {
+/* ================================================================
+   3. Region pills
+   ================================================================ */
+.models-region-bar {
+  display: flex;
+  gap: 0.3rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 0.2rem;
+}
+.models-region-bar::-webkit-scrollbar { display: none; }
+
+.region-pill {
+  flex-shrink: 0;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.region-pill:hover {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+}
+.region-pill--active {
+  background: rgba(0,229,255,0.1);
+  border-color: rgba(0,229,255,0.32);
+  color: var(--accent-cyan);
+}
+
+/* ================================================================
+   4. Product category tabs
+   ================================================================ */
+.models-category-bar {
+  display: flex;
+  gap: 0.2rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.18rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.models-category-bar::-webkit-scrollbar { display: none; }
+
+.category-tab {
+  flex: 1;
+  min-width: max-content;
+  padding: 0.32rem 0.65rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.category-tab:hover {
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+}
+.category-tab--active {
+  background: rgba(0,229,255,0.1);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0,229,255,0.06);
+}
+
+/* ================================================================
+   5. Product chips
+   ================================================================ */
+.models-product-bar {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.product-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.product-chip:hover:not(:disabled) {
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.06);
+}
+.product-chip--active {
+  background: rgba(0,229,255,0.12);
+  border-color: rgba(0,229,255,0.38);
+  color: var(--accent-cyan);
+}
+.product-chip--soon {
+  opacity: 0.4;
+  cursor: default;
+}
+.product-chip__badge {
+  font-size: 0.54rem;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  padding: 0.05rem 0.28rem;
+}
+
+/* ================================================================
+   6. Collapsible chart section
+   ================================================================ */
+.models-chart-section {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 1rem;
   overflow: hidden;
 }
 
-.models-chart-card__title {
+.models-chart-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 0.75rem;
+  list-style: none;
+  user-select: none;
+  transition: background 0.18s;
+}
+.models-chart-summary::-webkit-details-marker { display: none; }
+.models-chart-summary:hover { background: rgba(255,255,255,0.03); }
+
+.models-chart-summary__caret {
+  margin-left: auto;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(255,255,255,0.3);
+  transition: transform 0.2s;
+}
+details[open] .models-chart-summary__caret {
+  transform: rotate(180deg);
 }
 
-/* ---- SVG chart ---- */
+.models-chart-body {
+  padding: 0 0.85rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+/* ================================================================
+   7. Parameter selector + model toggle bar (inside chart section)
+   ================================================================ */
+.models-param-bar {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-top: 0.5rem;
+}
+.models-param-bar::-webkit-scrollbar { display: none; }
+
+.param-chip {
+  flex-shrink: 0;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.param-chip:hover {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+}
+.param-chip--active {
+  background: rgba(0,229,255,0.12);
+  border-color: rgba(0,229,255,0.35);
+  color: var(--accent-cyan);
+}
+
+.models-toggle-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.model-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-size: 0.67rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.model-pill:hover { border-color: rgba(255,255,255,0.15); }
+.model-pill--active { background: rgba(255,255,255,0.06); }
+.model-pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.model-pill__name { font-weight: 600; }
+.model-pill__res { color: var(--text-muted); font-size: 0.58rem; }
+
+/* ================================================================
+   8. Chart card + SVG labels
+   ================================================================ */
+.models-chart-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.85rem;
+  overflow: hidden;
+}
+.models-chart-card__title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.65rem;
+}
 .models-chart {
   width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+.models-chart::-webkit-scrollbar { display: none; }
+.models-chart svg { display: block; }
 
-.models-chart::-webkit-scrollbar {
-  display: none;
-}
+.chart-time-label  { font-size: 9px; fill: rgba(255,255,255,0.35); }
+.chart-value-label { font-size: 9px; fill: rgba(255,255,255,0.3); }
+.chart-grid-line   { stroke: rgba(255,255,255,0.06); stroke-width: 0.5; }
 
-.models-chart svg {
-  display: block;
-}
-
-/* ---- Legend ---- */
 .models-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 0.6rem;
+  gap: 0.55rem;
+  margin-top: 0.55rem;
 }
-
 .models-legend__item {
   display: flex;
   align-items: center;
@@ -202,114 +364,82 @@
   font-size: 0.62rem;
   color: var(--text-secondary);
 }
-
 .models-legend__swatch {
   width: 10px;
   height: 3px;
   border-radius: 2px;
 }
 
-/* ---- Loading state ---- */
+/* ================================================================
+   9. Model detail cards
+   ================================================================ */
+.model-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.model-detail-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+.model-detail-card__color {
+  width: 4px;
+  height: 30px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.model-detail-card__info { flex: 1; min-width: 0; }
+.model-detail-card__name {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.model-detail-card__meta {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+.model-detail-card__stat { text-align: right; flex-shrink: 0; }
+.model-detail-card__stat-value {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.model-detail-card__stat-label {
+  font-size: 0.57rem;
+  color: var(--text-muted);
+}
+
+/* ================================================================
+   10. Loading / error states
+   ================================================================ */
 .models-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 3rem 1rem;
+  gap: 0.7rem;
+  padding: 2.5rem 1rem;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
-
 .models-spinner {
-  width: 28px;
-  height: 28px;
-  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  width: 26px;
+  height: 26px;
+  border: 2.5px solid rgba(255,255,255,0.1);
   border-top-color: var(--accent-cyan);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ---- Error state ---- */
 .models-error {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
   color: #ef9a9a;
-  font-size: 0.78rem;
-}
-
-/* ---- Time axis labels ---- */
-.chart-time-label {
-  font-size: 9px;
-  fill: rgba(255, 255, 255, 0.35);
-}
-
-.chart-value-label {
-  font-size: 9px;
-  fill: rgba(255, 255, 255, 0.3);
-}
-
-.chart-grid-line {
-  stroke: rgba(255, 255, 255, 0.06);
-  stroke-width: 0.5;
-}
-
-/* ---- Model detail cards ---- */
-.model-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.model-detail-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-}
-
-.model-detail-card__color {
-  width: 4px;
-  height: 32px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.model-detail-card__info {
-  flex: 1;
-  min-width: 0;
-}
-
-.model-detail-card__name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.model-detail-card__meta {
-  font-size: 0.62rem;
-  color: var(--text-muted);
-}
-
-.model-detail-card__stat {
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.model-detail-card__stat-value {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.model-detail-card__stat-label {
-  font-size: 0.58rem;
-  color: var(--text-muted);
+  font-size: 0.76rem;
 }

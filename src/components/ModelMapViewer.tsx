@@ -1,18 +1,17 @@
 /**
  * ModelMapViewer — Leaflet map with animated NWP model WMS overlays.
  *
- * Displays EC GeoMet model data (HRDPS, RDPS, GDPS) on a dark-themed
- * interactive map with play/pause/scrub controls to step through forecast hours.
+ * Fully controlled component: model, param, map center, and zoom are all
+ * passed in from the parent (ModelsPage). Internal state is limited to
+ * animation playback and tile-caching progress.
  *
- * Similar architecture to the radar/satellite map but specialized for
- * model forecast visualization.
+ * The parent receives the current forecast time label via `onTimeChange`
+ * so it can update the ModelHero without needing to share hook state.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import WeatherMap from './map/WeatherMap';
 import { useModelMapAnimation } from '../hooks/useModelMapAnimation';
-import { useWeatherStore } from '../store/weatherStore';
 import {
-  EC_GEOMET_WMS_URL,
   MODEL_MAP_DEFS,
   MODEL_MAP_PARAMS,
 } from '../services/ecGeometLayers';
@@ -20,22 +19,37 @@ import type { ModelMapModelId, ModelMapParamId } from '../services/ecGeometLayer
 import type { WmsOverlayDef } from '../types/map';
 import './ModelMapViewer.css';
 
-const DEFAULT_MODEL: ModelMapModelId = 'hrdps';
-const DEFAULT_PARAM: ModelMapParamId = 'temperature';
+export interface ModelMapViewerProps {
+  /** Currently active EC model identifier */
+  model: ModelMapModelId;
+  /** Currently active product/parameter identifier */
+  param: ModelMapParamId;
+  /** [lat, lon] to centre the map on (e.g. from a region preset) */
+  mapCenter: [number, number];
+  /** Leaflet zoom level */
+  mapZoom: number;
+  /** Called whenever the displayed forecast time label changes */
+  onTimeChange?: (label: string) => void;
+}
 
-export default function ModelMapViewer() {
-  const lat = useWeatherStore((s) => s.lat);
-  const lon = useWeatherStore((s) => s.lon);
-
-  const [selectedModel, setSelectedModel] = useState<ModelMapModelId>(DEFAULT_MODEL);
-  const [selectedParam, setSelectedParam] = useState<ModelMapParamId>(DEFAULT_PARAM);
-
+export default function ModelMapViewer({
+  model,
+  param,
+  mapCenter,
+  mapZoom,
+  onTimeChange,
+}: ModelMapViewerProps) {
   /* ---- Resolve WMS layer name ---- */
-  const modelDef = MODEL_MAP_DEFS.find((m) => m.id === selectedModel)!;
-  const wmsLayerName = modelDef.layers[selectedParam];
+  const modelDef = MODEL_MAP_DEFS.find((m) => m.id === model)!;
+  const wmsLayerName = modelDef.layers[param];
 
   /* ---- Animation state ---- */
-  const [animState, animControls] = useModelMapAnimation(wmsLayerName);
+  const [animState, animControls] = useModelMapAnimation(wmsLayerName, modelDef.wmsUrl);
+
+  /* ---- Notify parent of time label changes ---- */
+  useEffect(() => {
+    if (onTimeChange) onTimeChange(animState.timeLabel);
+  }, [animState.timeLabel, onTimeChange]);
 
   /* ---- Cache tracking ---- */
   const [cacheReady, setCacheReady] = useState(false);
@@ -67,7 +81,7 @@ export default function ModelMapViewer() {
     if (!wmsLayerName || animState.allTimes.length === 0) return [];
     return [
       {
-        id: `model-${selectedModel}-${selectedParam}`,
+        id: `model-${model}-${param}`,
         url: EC_GEOMET_WMS_URL,
         layers: wmsLayerName,
         opacity: 0.7,
@@ -75,53 +89,24 @@ export default function ModelMapViewer() {
         transparent: true,
         time: animState.currentTime,
         allTimes: animState.allTimes,
+        extraParams: modelDef.extraParams?.[param],
+        attribution: modelDef.provider === 'Environment Canada'
+          ? '<a href="https://eccc-msc.github.io/open-data/">EC GeoMet</a>'
+          : `${modelDef.provider} · <a href="https://thredds.ucar.edu/">UCAR THREDDS</a>`,
       },
     ];
-  }, [wmsLayerName, selectedModel, selectedParam, animState.currentTime, animState.allTimes]);
+  }, [wmsLayerName, model, param, modelDef, animState.currentTime, animState.allTimes]);
 
   const busy = animState.loading || (!cacheReady && animState.allTimes.length > 0);
 
   return (
     <div className="model-map-viewer">
-      {/* Model selector pills */}
-      <div className="model-map-controls">
-        <div className="model-map-models">
-          {MODEL_MAP_DEFS.map((m) => (
-            <button
-              key={m.id}
-              className={`model-map-pill${selectedModel === m.id ? ' model-map-pill--active' : ''}`}
-              style={selectedModel === m.id ? { borderColor: `${m.color}55`, color: m.color } : undefined}
-              onClick={() => setSelectedModel(m.id)}
-            >
-              <span
-                className="model-map-pill__dot"
-                style={{ background: selectedModel === m.id ? m.color : 'rgba(255,255,255,0.15)' }}
-              />
-              {m.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Parameter selector */}
-        <div className="model-map-params">
-          {MODEL_MAP_PARAMS.map((p) => (
-            <button
-              key={p.id}
-              className={`model-map-param${selectedParam === p.id ? ' model-map-param--active' : ''}`}
-              onClick={() => setSelectedParam(p.id)}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Map container */}
       <div className="model-map-container">
         <WeatherMap
-          lat={lat}
-          lon={lon}
-          zoom={5}
+          lat={mapCenter[0]}
+          lon={mapCenter[1]}
+          zoom={mapZoom}
           overlays={overlays}
           onCacheStatus={handleCacheStatus}
         />
@@ -130,7 +115,7 @@ export default function ModelMapViewer() {
         <div className="model-map-info" style={{ borderLeftColor: modelDef.color }}>
           <span className="model-map-info__name">{modelDef.label}</span>
           <span className="model-map-info__detail">
-            {MODEL_MAP_PARAMS.find((p) => p.id === selectedParam)?.label} · {modelDef.resolution}
+            {MODEL_MAP_PARAMS.find((p) => p.id === param)?.label} · {modelDef.resolution}
           </span>
         </div>
 

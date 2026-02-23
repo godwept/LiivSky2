@@ -39,13 +39,13 @@ export interface WeatherMapProps {
 }
 
 /**
- * Inner helper: re-centers the map when coords change.
+ * Inner helper: re-centers AND re-zooms the map when props change.
  */
-function RecenterOnChange({ lat, lon }: { lat: number; lon: number }) {
+function RecenterOnChange({ lat, lon, zoom }: { lat: number; lon: number; zoom: number }) {
   const map = useMap();
   useEffect(() => {
-    map.setView([lat, lon], map.getZoom(), { animate: true });
-  }, [lat, lon, map]);
+    map.setView([lat, lon], zoom, { animate: true });
+  }, [lat, lon, zoom, map]);
   return null;
 }
 
@@ -101,6 +101,7 @@ function WmsAnimatedLayer({
       opacity: overlay.opacity ?? 0.65,
       tileSize: TILE_SIZE,
       attribution: attrText,
+      ...(overlay.extraParams ?? {}),
     } as L.WMSOptions);
     layer.addTo(map);
     staticLayerRef.current = layer;
@@ -142,6 +143,7 @@ function WmsAnimatedLayer({
         opacity: 0,
         tileSize: TILE_SIZE,
         attribution: attrText,
+        ...(overlay.extraParams ?? {}),
       };
       if (!isForecast) {
         wmsOpts['time'] = key; // WMS TIME param
@@ -238,7 +240,7 @@ export default function WeatherMap({
         />
       ))}
 
-      <RecenterOnChange lat={lat} lon={lon} />
+      <RecenterOnChange lat={lat} lon={lon} zoom={zoom ?? 7} />
     </MapContainer>
   );
 }

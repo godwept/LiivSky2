@@ -1,0 +1,165 @@
+/**
+ * Styles for the ModelHero component.
+ * Compact two-row banner with an animated gradient background.
+ */
+
+/* ---- Outer wrapper ---- */
+.model-hero {
+  position: relative;
+  padding: 0.7rem 1rem 0.6rem;
+  margin-bottom: 0.75rem;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 200, 255, 0.1);
+  isolation: isolate;
+}
+
+/* ---- Animated background layer ---- */
+.model-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    125deg,
+    rgba(0, 80, 150, 0.35) 0%,
+    rgba(0, 40, 90, 0.22) 55%,
+    rgba(0, 15, 40, 0.18) 100%
+  );
+  animation: model-hero-breathe 9s ease-in-out infinite;
+}
+
+@keyframes model-hero-breathe {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.68; }
+}
+
+/* ---- Top row ---- */
+.model-hero__top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.38rem;
+}
+
+/* ---- Model badge ---- */
+.model-hero__model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 7px;
+  border: 1px solid;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  transition: all 0.25s;
+}
+
+.model-hero__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.model-hero__model-name {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.model-hero__model-res {
+  font-size: 0.58rem;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* ---- Product label ---- */
+.model-hero__product {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.model-hero__category {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.model-hero__sep {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.model-hero__param {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Region ---- */
+.model-hero__region {
+  display: flex;
+  align-items: center;
+  gap: 0.22rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ---- Bottom row ---- */
+.model-hero__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Forecast time */
+.model-hero__time {
+  display: flex;
+  align-items: center;
+  gap: 0.22rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(0, 229, 255, 0.75);
+}
+
+/* Provider + location */
+.model-hero__provider-loc {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.model-hero__provider {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.model-hero__sep-dot {
+  opacity: 0.45;
+}
+
+.model-hero__location {
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
