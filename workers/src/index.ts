@@ -37,6 +37,10 @@ export default {
         return await handleSatellitePasses(url, env);
       }
 
+      if (url.pathname === '/api/v1/darksky') {
+        return await handleDarkSkyProxy(url, env);
+      }
+
       return errorResponse(404, 'not_found', 'Endpoint not found.', undefined, env);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown worker error.';
@@ -112,6 +116,41 @@ function toUnit(value: string): TemperatureUnit | null {
   }
 
   return null;
+}
+
+// ======== 7Timer Dark Sky Proxy ========
+
+/**
+ * Proxy for the 7Timer ASTRO API, which lacks CORS headers.
+ * Forwards lat/lon to 7Timer server-side and returns the JSON with CORS headers.
+ */
+async function handleDarkSkyProxy(url: URL, env: Env): Promise<Response> {
+  const lat = toFiniteNumber(url.searchParams.get('lat'));
+  const lon = toFiniteNumber(url.searchParams.get('lon'));
+
+  if (lat === null || lon === null) {
+    return errorResponse(400, 'invalid_coordinates', 'lat and lon must both be valid numbers.', undefined, env);
+  }
+
+  const upstream = `https://www.7timer.info/bin/api.pl?lon=${lon.toFixed(3)}&lat=${lat.toFixed(3)}&product=astro&output=json`;
+
+  let upstreamResp: Response;
+  try {
+    upstreamResp = await fetch(upstream, {
+      headers: { 'User-Agent': 'LiivSky2/1.0 DarkSky-Proxy' },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Upstream fetch failed';
+    return errorResponse(502, 'upstream_error', '7Timer request failed.', msg, env);
+  }
+
+  if (!upstreamResp.ok) {
+    return errorResponse(502, 'upstream_error', `7Timer returned ${upstreamResp.status}.`, undefined, env);
+  }
+
+  const data: unknown = await upstreamResp.json();
+  // Cache 3 hours — 7Timer updates 4× per day
+  return withCache(jsonResponse(data, { status: 200 }, env), 10800);
 }
 
 // ======== Satellite passes (N2YO) ========

@@ -21,7 +21,11 @@ import type {
   LiftedIndexValue,
 } from '../types/darksky';
 
-const API_BASE = 'https://www.7timer.info/bin/api.pl';
+function getApiBaseUrl(): string {
+  const fromEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+    ?.VITE_API_BASE_URL;
+  return (fromEnv && fromEnv.trim().length > 0 ? fromEnv : '/api/v1').replace(/\/$/, '');
+}
 
 /**
  * 7Timer uses -9999 as a sentinel "no data" value for numeric fields.
@@ -155,10 +159,14 @@ export async function fetchDarkSkyForecast(
   lat: number,
   lon: number,
 ): Promise<DarkSkyForecast> {
-  const url = `${API_BASE}?lon=${lon.toFixed(3)}&lat=${lat.toFixed(3)}&product=astro&output=json`;
-  const res = await fetch(url);
+  const apiBase = getApiBaseUrl();
+  const proxyUrl = new URL(`${apiBase}/darksky`, window.location.origin);
+  proxyUrl.searchParams.set('lat', lat.toFixed(3));
+  proxyUrl.searchParams.set('lon', lon.toFixed(3));
+
+  const res = await fetch(proxyUrl.toString());
   if (!res.ok) {
-    throw new Error(`7Timer API returned ${res.status}`);
+    throw new Error(`Dark sky proxy returned ${res.status}`);
   }
   const data = (await res.json()) as AstroApiResponse;
   const initDate = parseInitTime(data.init);
@@ -168,10 +176,10 @@ export async function fetchDarkSkyForecast(
   // would otherwise produce wildly out-of-range scores.
   const validSeries = data.dataseries.filter(
     (ts) =>
-      ts.seeing !== SENTINEL &&
-      ts.transparency !== SENTINEL &&
+      (ts.seeing as number) !== SENTINEL &&
+      (ts.transparency as number) !== SENTINEL &&
       ts.rh2m !== SENTINEL &&
-      ts.lifted_index !== SENTINEL,
+      (ts.lifted_index as number) !== SENTINEL,
   );
 
   const items = validSeries.map((ts) => processTimestep(ts, initDate));
