@@ -14,6 +14,7 @@ import { useModelMapAnimation } from '../hooks/useModelMapAnimation';
 import {
   MODEL_MAP_DEFS,
   MODEL_MAP_PARAMS,
+  EC_GEOMET_WMS_URL,
 } from '../services/ecGeometLayers';
 import type { ModelMapModelId, ModelMapParamId } from '../services/ecGeometLayers';
 import type { WmsOverlayDef } from '../types/map';
